@@ -23,8 +23,6 @@ export default function Home() {
   }
   return (
     <div>
-      <div>
-      </div>
       <Appbody
         blogs={data?.sort((a: any, b: any) => b.id - a.id)} />
     </div>
