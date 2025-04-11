@@ -1,19 +1,15 @@
 'use client'
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import { mutate } from "swr"
 import axios from "axios";
+import { ModalContext } from './app.body';
 
-interface Iprops {
-    showModalCreate: boolean,
-    setShowModalCreate: (v: boolean) => void;
-}
-
-function CreateModal(props: Iprops) {
-    const { showModalCreate, setShowModalCreate } = props;
+function CreateModal() {
+    const { showModalcreate: showModalCreate, setShowModalCreate } = useContext(ModalContext);
     const [title, setTitle] = useState<string>("")
     const [author, setAuthor] = useState<string>("")
     const [content, setContent] = useState<string>("")

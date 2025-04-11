@@ -1,17 +1,45 @@
 'use client'
-import { Button } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import Table from 'react-bootstrap/Table';
 import CreateModal from './create.modal';
-import Form from 'react-bootstrap/Form';
 import { ToastContainer, toast } from 'react-toastify';
-import { useState } from 'react';
+import { createContext, useState } from 'react';
 import UpdateModal from './update.modal';
 import DeleteModal from './delete.modal'
 import ViewModal from './view.modal'
+
 interface IProps {
     blogs: IBlog[]
 }
 
+
+export const ModalContext = createContext<{
+    showModalcreate: boolean,
+    setShowModalCreate: (value: boolean) => void,
+    updateModal: boolean,
+    setUpdateModal: (value: boolean) => void,
+    deleteModal: boolean,
+    setDeleteModal: (value: boolean) => void,
+    viewModal: boolean,
+    setViewModal: (value: boolean) => void,
+    blogs: IBlog | null;
+    blogToDelete: IBlog | null;
+    blogToUpdate: IBlog | null;
+    setBlogs: (blog: IBlog | null) => void;
+}>({
+    showModalcreate: false,
+    setShowModalCreate: () => { },
+    updateModal: false,
+    setUpdateModal: () => { },
+    deleteModal: false,
+    setDeleteModal: () => { },
+    viewModal: false,
+    setViewModal: () => { },
+    blogs: null,
+    setBlogs: () => { },
+    blogToUpdate: null,
+    blogToDelete: null,
+})
 function DarkExample(props: IProps) {
     const { blogs } = props;
 
@@ -19,8 +47,7 @@ function DarkExample(props: IProps) {
     const [updateModal, setUpdateModal] = useState<boolean>(false);
     const [deleteModal, setDeleteModal] = useState<boolean>(false);
     const [blogToDelete, setBlogToDelete] = useState<IBlog | null>(null);
-    const [blogToedit, setBlogToedit] = useState<IBlog | null>(null);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [blogToUpdate, setblogToUpdate] = useState<IBlog | null>(null);
     const [viewModal, setViewModal] = useState<boolean>(false);
     const [blogToView, setBlogToView] = useState<IBlog | null>(null);
 
@@ -34,12 +61,26 @@ function DarkExample(props: IProps) {
         setDeleteModal(true);
     };
     const handeditclick = (blog: IBlog) => {
-        setBlogToedit(blog);
-        console.log(blogToedit);
+        setblogToUpdate(blog);
+        console.log(blogToUpdate);
         setUpdateModal(true)
     }
     return (
-        <>
+        <ModalContext.Provider
+            value={{
+                showModalcreate: showmodalcreate,
+                setShowModalCreate,
+                updateModal: updateModal,
+                setUpdateModal,
+                deleteModal: deleteModal,
+                setDeleteModal,
+                viewModal: viewModal,
+                setViewModal,
+                blogs: blogToDelete,
+                setBlogs: setBlogToDelete,
+                blogToUpdate: blogToUpdate,
+                blogToDelete: blogToDelete,
+            }}>
             <div
                 className='mb-3'
                 style={{ display: 'flex', justifyContent: "space-between" }}>
@@ -72,24 +113,14 @@ function DarkExample(props: IProps) {
                     })}
                 </tbody>
             </Table>
-            <CreateModal
-                showModalCreate={showmodalcreate}
-                setShowModalCreate={setShowModalCreate} />
+            <CreateModal />
             <UpdateModal
                 updateModal={updateModal}
                 setUpdateModal={setUpdateModal}
-                blog={blogToedit || undefined}
+                blog={blogToUpdate || undefined}
             />
 
             <DeleteModal
-                isOpen={deleteModal}
-                onClose={() => setDeleteModal(false)}
-                id={blogToDelete?.id ?? 0}
-                title="Delete Blog"
-                message={`Are you sure you want to delete this blog?`}
-                onSuccess={() => {
-                    window.location.reload();
-                }}
             />
             <ViewModal
                 viewModal={viewModal}
@@ -110,7 +141,7 @@ function DarkExample(props: IProps) {
             />
 
 
-        </>
+        </ModalContext.Provider>
     );
 }
 

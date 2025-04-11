@@ -1,11 +1,12 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import { mutate } from "swr"
 import axios from "axios";
+import { ModalContext } from './app.body';
 
 interface Iprops {
     updateModal: boolean,
@@ -19,23 +20,23 @@ interface Iprops {
 }
 
 function UpdateModal(props: Iprops) {
-    const { updateModal, setUpdateModal, blog } = props;
+    const { updateModal, setUpdateModal, blogToUpdate } = useContext(ModalContext);
     const [title, setTitle] = useState<string>("")
     const [author, setAuthor] = useState<string>("")
     const [content, setContent] = useState<string>("")
 
     useEffect(() => {
-        if (blog) {
-            setTitle(blog.title)
-            setAuthor(blog.author)
-            setContent(blog.content)
+        if (blogToUpdate) {
+            setTitle(blogToUpdate.title)
+            setAuthor(blogToUpdate.author)
+            setContent(blogToUpdate.content)
         }
-    }, [blog])
+    }, [blogToUpdate])
 
     const handleSubmit = () => {
-        if (!blog?.id) return;
+        if (!blogToUpdate?.id) return;
 
-        axios.put(`http://localhost:8000/blogs/${blog.id}`, {
+        axios.put(`http://localhost:8000/blogs/${blogToUpdate.id}`, {
             title: title,
             content: content,
             author: author
