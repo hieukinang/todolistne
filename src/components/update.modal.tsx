@@ -6,7 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import { mutate } from "swr"
 import axios from "axios";
-import { ModalContext } from './app.body';
+import { useDispatch, useSelector } from 'react-redux';
+import { setBlogToUpdate, setUpdateModal } from '@/app/redux/reducer';
 
 interface Iprops {
     updateModal: boolean,
@@ -19,8 +20,10 @@ interface Iprops {
     }
 }
 
-function UpdateModal(props: Iprops) {
-    const { updateModal, setUpdateModal, blogToUpdate } = useContext(ModalContext);
+function UpdateModal() {
+    const dispatch = useDispatch();
+    const blogToUpdate = useSelector((state: any) => state.blog.blogToUpdate);
+    const updateModal = useSelector((state: any) => state.blog.updateModal);
     const [title, setTitle] = useState<string>("")
     const [author, setAuthor] = useState<string>("")
     const [content, setContent] = useState<string>("")
@@ -55,7 +58,8 @@ function UpdateModal(props: Iprops) {
         setTitle("")
         setAuthor("")
         setContent("")
-        setUpdateModal(false)
+        dispatch(setUpdateModal(false))
+        dispatch(setBlogToUpdate({} as any))
     }
 
     return (

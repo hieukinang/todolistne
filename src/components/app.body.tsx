@@ -12,80 +12,56 @@ interface IProps {
     blogs: IBlog[]
 }
 
-
-export const ModalContext = createContext<{
-    showModalcreate: boolean,
-    setShowModalCreate: (value: boolean) => void,
-    updateModal: boolean,
-    setUpdateModal: (value: boolean) => void,
-    deleteModal: boolean,
-    setDeleteModal: (value: boolean) => void,
-    viewModal: boolean,
-    setViewModal: (value: boolean) => void,
-    blogs: IBlog | null;
-    blogToDelete: IBlog | null;
-    blogToUpdate: IBlog | null;
-    setBlogs: (blog: IBlog | null) => void;
-}>({
-    showModalcreate: false,
-    setShowModalCreate: () => { },
-    updateModal: false,
-    setUpdateModal: () => { },
-    deleteModal: false,
-    setDeleteModal: () => { },
-    viewModal: false,
-    setViewModal: () => { },
-    blogs: null,
-    setBlogs: () => { },
-    blogToUpdate: null,
-    blogToDelete: null,
-})
+import {
+    setCreateModal,
+    setUpdateModal,
+    setDeleteModal,
+    setViewModal,
+    setBlogToDelete,
+    setBlogToUpdate,
+    setBlogToView,
+    setBlogToCreate
+} from '@/app/redux/reducer';
+import { useDispatch, useSelector } from 'react-redux';
 function DarkExample(props: IProps) {
     const { blogs } = props;
-
-    const [showmodalcreate, setShowModalCreate] = useState<boolean>(false);
-    const [updateModal, setUpdateModal] = useState<boolean>(false);
-    const [deleteModal, setDeleteModal] = useState<boolean>(false);
-    const [blogToDelete, setBlogToDelete] = useState<IBlog | null>(null);
-    const [blogToUpdate, setblogToUpdate] = useState<IBlog | null>(null);
-    const [viewModal, setViewModal] = useState<boolean>(false);
-    const [blogToView, setBlogToView] = useState<IBlog | null>(null);
-
-
-    const handleViewClick = (blog: IBlog) => {
-        setBlogToView(blog);
-        setViewModal(true);
+    const dispatch = useDispatch();
+    const {
+        createModal,
+        updateModal,
+        deleteModal,
+        viewModal,
+        blogToDelete,
+        blogtoCreate,
+        blogToUpdate,
+        blogToView
+    } = useSelector((state: any) => state.blog);
+    const handleCreateClick = (blog: IBlog) => {
+        dispatch(setBlogToCreate(blog));
+        dispatch(setCreateModal(true));
     };
+    console.log("createModal =", useSelector((state: any) => state.blog.createModal));
+
     const handleDeleteClick = (blog: IBlog) => {
-        setBlogToDelete(blog);
-        setDeleteModal(true);
+        dispatch(setBlogToDelete(blog));
+        dispatch(setDeleteModal(true));
     };
-    const handeditclick = (blog: IBlog) => {
-        setblogToUpdate(blog);
-        console.log(blogToUpdate);
-        setUpdateModal(true)
+
+    const handleEditClick = (blog: IBlog) => {
+        dispatch(setBlogToUpdate(blog));
+        dispatch(setUpdateModal(true));
+    }
+    const handleViewClick = (blog: IBlog) => {
+        dispatch(setBlogToView(blog));
+        dispatch(setViewModal(true));
     }
     return (
-        <ModalContext.Provider
-            value={{
-                showModalcreate: showmodalcreate,
-                setShowModalCreate,
-                updateModal: updateModal,
-                setUpdateModal,
-                deleteModal: deleteModal,
-                setDeleteModal,
-                viewModal: viewModal,
-                setViewModal,
-                blogs: blogToDelete,
-                setBlogs: setBlogToDelete,
-                blogToUpdate: blogToUpdate,
-                blogToDelete: blogToDelete,
-            }}>
+        <>
             <div
                 className='mb-3'
                 style={{ display: 'flex', justifyContent: "space-between" }}>
                 <h3>Table Blogs</h3>
-                <Button variant='secondary' onClick={() => setShowModalCreate(true)}>Add new</Button>
+                <Button variant='secondary' onClick={() => handleCreateClick({} as IBlog)}>Add new</Button>
             </div>
             <Table striped bordered hover variant="dark">
                 <thead>
@@ -105,7 +81,7 @@ function DarkExample(props: IProps) {
                                 <td>{blog.author}</td>
                                 <td>
                                     <Button variant='info' onClick={() => handleViewClick(blog)}>view</Button>
-                                    <Button variant='warning' className='mx-3' onClick={() => handeditclick(blog)}>edit</Button>
+                                    <Button variant='warning' className='mx-3' onClick={() => handleEditClick(blog)}>edit</Button>
                                     <Button variant='danger' onClick={() => handleDeleteClick(blog)}>delete</Button>
                                 </td>
                             </tr>
@@ -114,19 +90,11 @@ function DarkExample(props: IProps) {
                 </tbody>
             </Table>
             <CreateModal />
-            <UpdateModal
-                updateModal={updateModal}
-                setUpdateModal={setUpdateModal}
-                blog={blogToUpdate || undefined}
-            />
+            <UpdateModal />
 
             <DeleteModal
             />
-            <ViewModal
-                viewModal={viewModal}
-                setViewModal={setViewModal}
-                blog={blogToView || undefined}
-            />
+            <ViewModal />
 
             <ToastContainer
                 position="top-right"
@@ -141,7 +109,7 @@ function DarkExample(props: IProps) {
             />
 
 
-        </ModalContext.Provider>
+        </>
     );
 }
 

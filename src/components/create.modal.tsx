@@ -6,14 +6,15 @@ import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import { mutate } from "swr"
 import axios from "axios";
-import { ModalContext } from './app.body';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCreateModal } from '@/app/redux/reducer';
 
 function CreateModal() {
-    const { showModalcreate: showModalCreate, setShowModalCreate } = useContext(ModalContext);
+    const showModalCreate = useSelector((state: any) => state.blog.createModal);
     const [title, setTitle] = useState<string>("")
     const [author, setAuthor] = useState<string>("")
     const [content, setContent] = useState<string>("")
-
+    const dispatch = useDispatch();
     const handleSubmit = () => {
         if (!title) {
             toast.warning("ko dc dau be oi :)")
@@ -44,7 +45,7 @@ function CreateModal() {
         setTitle("")
         setAuthor("")
         setContent("")
-        setShowModalCreate(false)
+        dispatch(setCreateModal(false))
     }
     return (
         <>

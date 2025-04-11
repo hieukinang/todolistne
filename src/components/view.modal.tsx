@@ -4,39 +4,34 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { setBlogToView, setViewModal } from '@/app/redux/reducer';
 
-interface ViewModalProps {
-    viewModal: boolean;
-    setViewModal: (value: boolean) => void;
-    blog?: IBlog;
-}
+const ViewModal = () => {
+    const dispatch = useDispatch();
+    const blogToView = useSelector((state: any) => state.blog.blogToView);
+    const viewModal = useSelector((state: any) => state.blog.viewModal);
+    const [title, setTitle] = useState<string>("")
+    const [author, setAuthor] = useState<string>("")
+    const [content, setContent] = useState<string>("")
 
-const ViewModal = ({ viewModal, setViewModal, blog }: ViewModalProps) => {
-    const [blogData, setBlogData] = useState<IBlog | null>(null);
 
     useEffect(() => {
-        const fetchBlogDetails = async () => {
-            if (blog?.id) {
-                try {
-                    const response = await axios.get(`http://localhost:8000/blogs/${blog.id}`);
-                    setBlogData(response.data);
-                } catch (error) {
-                    console.error('Error fetching blog details:', error);
-                }
-            }
-        };
-
-        if (viewModal) {
-            fetchBlogDetails();
+        if (blogToView) {
+            setTitle(blogToView.title)
+            setAuthor(blogToView.author)
+            setContent(blogToView.content)
         }
-    }, [viewModal, blog?.id]);
+    }, [blogToView])
+
 
     const handleCloseModal = () => {
-        setViewModal(false);
-        setBlogData(null);
+        setTitle("")
+        setAuthor("")
+        setContent("")
+        dispatch(setViewModal(false))
+        dispatch(setBlogToView({} as any))
     }
-
-    if (!viewModal) return null;
 
     return (
         <>
@@ -57,7 +52,7 @@ const ViewModal = ({ viewModal, setViewModal, blog }: ViewModalProps) => {
                             <Form.Control
                                 as="textarea"
                                 rows={1}
-                                value={blogData?.title || ''}
+                                value={title || ''}
                                 readOnly
                                 disabled
                             />
@@ -67,7 +62,7 @@ const ViewModal = ({ viewModal, setViewModal, blog }: ViewModalProps) => {
                             <Form.Control
                                 as="textarea"
                                 rows={1}
-                                value={blogData?.author || ''}
+                                value={author || ''}
                                 readOnly
                                 disabled
                             />
@@ -77,7 +72,7 @@ const ViewModal = ({ viewModal, setViewModal, blog }: ViewModalProps) => {
                             <Form.Control
                                 as="textarea"
                                 rows={10}
-                                value={blogData?.content || ''}
+                                value={content || ''}
                                 readOnly
                                 disabled
                             />
